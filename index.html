@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>WuangTapMod</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#10101c;
+ color:white;
+ font-family:Arial,sans-serif;
+}
+#W{
+ position:fixed;
+ left:20px;
+ top:150px;
+ width:65px;
+ height:65px;
+ border-radius:50%;
+ background:linear-gradient(135deg,#a855f7,#6d28d9);
+ border:2px solid #ddd6fe;
+ color:white;
+ font-size:30px;
+ font-weight:bold;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ box-shadow:0 0 22px #9333ea99;
+ touch-action:none;
+ user-select:none;
+ -webkit-user-select:none;
+ z-index:9999;
+}
+#menu{
+ display:none;
+ position:fixed;
+ top:230px;
+ left:15px;
+ width:min(350px,calc(100vw - 30px));
+ background:#202035;
+ border:1px solid #9333ea;
+ border-radius:18px;
+ padding:20px;
+ box-shadow:0 12px 35px #0009;
+ z-index:9998;
+}
+h2{
+ text-align:center;
+ color:#c4b5fd;
+ font-size:21px;
+}
+.item{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:13px 0;
+ border-bottom:1px solid #444;
+}
+input[type=checkbox]{
+ width:23px;
+ height:23px;
+ accent-color:#a855f7;
+}
+input[type=range]{
+ width:100%;
+ accent-color:#a855f7;
+}
+#status{
+ margin-top:18px;
+ font-size:13px;
+ color:#c4b5fd;
+}
+</style>
+</head>
+<body>
+
+<div id="W">W</div>
+
+<div id="menu">
+<h2>WUANG TAP MOD</h2>
+
+<div class="item">
+ESP
+<input type="checkbox" data-cmd="esp">
+</div>
+
+<div class="item">
+Check tố cáo
+<input type="checkbox" data-cmd="check">
+</div>
+
+<div class="item">
+Bộc phá
+<input type="checkbox" data-cmd="bocpha">
+</div>
+
+<div class="item">
+Trừng trị
+<input type="checkbox" data-cmd="trungtri">
+</div>
+
+<div class="item">
+ECAM
+<span id="value">1.0</span>
+</div>
+
+<input id="zoom" type="range"
+ min="1" max="2.3"
+ step="0.1" value="1">
+
+<div id="status">
+Menu demo đã sẵn sàng
+</div>
+</div>
+
+<script>
+const W=document.getElementById("W");
+const menu=document.getElementById("menu");
+const status=document.getElementById("status");
+
+let sx=0,sy=0,ox=0,oy=0;
+let moved=false;
+let active=false;
+
+W.addEventListener("pointerdown",e=>{
+ e.preventDefault();
+ active=true;
+ moved=false;
+ sx=e.clientX;
+ sy=e.clientY;
+ ox=W.offsetLeft;
+ oy=W.offsetTop;
+ W.setPointerCapture(e.pointerId);
+});
+
+W.addEventListener("pointermove",e=>{
+ if(!active)return;
+ let dx=e.clientX-sx;
+ let dy=e.clientY-sy;
+ if(Math.hypot(dx,dy)>6)moved=true;
+ if(moved){
+  W.style.left=Math.max(0,
+   Math.min(innerWidth-65,ox+dx))+"px";
+  W.style.top=Math.max(0,
+   Math.min(innerHeight-65,oy+dy))+"px";
+ }
+});
+
+W.addEventListener("pointerup",()=>{
+ if(!active)return;
+ active=false;
+ if(!moved){
+  menu.style.display=
+   menu.style.display==="block"
+   ?"none":"block";
+ }
+});
+
+W.addEventListener("pointercancel",()=>{
+ active=false;
+});
+
+document.querySelectorAll("[data-cmd]")
+.forEach(el=>{
+ el.addEventListener("change",()=>{
+  status.textContent="/"+
+   el.dataset.cmd+" "+
+   (el.checked?"on":"off")+
+   " (demo)";
+ });
+});
+
+document.getElementById("zoom")
+.addEventListener("input",e=>{
+ let v=Number(e.target.value).toFixed(1);
+ document.getElementById("value")
+ .textContent=v;
+ status.textContent="/ecam "+v+" (demo)";
+});
+</script>
+</body>
+</html>
