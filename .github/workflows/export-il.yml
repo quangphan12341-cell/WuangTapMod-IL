@@ -1,0 +1,44 @@
+
+name: Export WuangTapMod IL
+
+on:
+  workflow_dispatch:
+
+jobs:
+  export-il:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install ILSpy
+        run: |
+          dotnet tool install --global ilspycmd
+
+      - name: Export IL and CSharp
+        shell: bash
+        run: |
+          mkdir -p output
+
+          ilspycmd -il WuangTapMod.dll \
+            > output/WuangTapMod_IL.txt
+
+          ilspycmd WuangTapMod.dll \
+            > output/WuangTapMod_Decompiled.cs
+
+          ilspycmd -l c WuangTapMod.dll \
+            > output/WuangTapMod_Classes.txt
+
+          cp WuangTapMod.deps.json output/
+
+      - name: Upload analysis files
+        uses: actions/upload-artifact@v4
+        with:
+          name: WuangTapMod-Analysis
+          path: output/
